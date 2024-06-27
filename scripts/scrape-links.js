@@ -17,8 +17,11 @@ async function scrapeArticleContent(url) {
 
       if (entryContent) {
         // Extracting all text content under .entry-content
-        const textContent = entryContent.textContent.trim();
-        return { content: textContent };
+        Array.from(entryContent.querySelectorAll('.wtwh-hover-ticker')).forEach(el => el.remove());
+
+        const textContent = entryContent.textContent.trim()
+        const trimmedText = textContent.replace(/\n/g, "").replace(/FacebookXLinkedInShare/g, "");
+        return { content: trimmedText };
       } else {
         throw new Error('.entry-content not found on the page');
       }
