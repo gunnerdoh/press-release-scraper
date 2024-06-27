@@ -14,6 +14,11 @@ const path = require('path');
     await page.goto('https://www.massdevice.com/?s=stryker&page=1', { waitUntil: 'networkidle2' });
 
     console.log('Extracting data...');
+
+    // picks sort by recent, waits for page to load
+    await page.select('#wtwh-search-sort-select', 'descending');
+    await page.locator('.search-results-article-container').wait();
+
     const data = await page.evaluate(() => {
       const articles = [];
       const articleContainers = document.querySelectorAll('.search-results-article-container');
@@ -27,7 +32,8 @@ const path = require('path');
           const timestamp = timestampElement.textContent.trim();
           const title = titleElement.textContent.trim();
           // Push data to json element
-          articles.push({ title, timestamp });
+          const articleLink = titleElement.href;
+          articles.push({ title, timestamp, articleLink});
         }
       });
 
