@@ -40,8 +40,6 @@ const path = require('path');
       return articles;
     });
 
-    console.log('Data extracted:', data);
-
     // Save to JSON
     const filePath = path.join(__dirname,'../data/scraped-data.json');
 
