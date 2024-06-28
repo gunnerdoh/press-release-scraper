@@ -4,6 +4,8 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 
+const scrapeLinks = require('./scrape-links');
+
 (async () => {
   try {
     // Launch browser
@@ -46,9 +48,11 @@ const path = require('path');
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 
     console.log(`Data saved to ${filePath}`);
+    console.log('made');
 
     // Close browser
     await browser.close();
+    scrapeLinks.pushArticleContent();
   } catch (error) {
     console.error('Error:', error);
   }

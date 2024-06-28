@@ -35,7 +35,7 @@ async function scrapeArticleContent(url) {
   }
 }
 
-(async () => {
+async function pushArticleContent() {
   try {
     // Read the article links from the JSON file
     const articles = require(inputFilePath);
@@ -60,10 +60,16 @@ async function scrapeArticleContent(url) {
       }
     }
 
+    console.log('made');
     // Save all scraped content to a JSON file
     fs.writeFileSync(outputFilePath, JSON.stringify(scrapedContents, null, 2));
     console.log(`All content saved to ${outputFilePath}`);
   } catch (error) {
     console.error('Error:', error);
   }
-})();
+};
+
+module.exports = {
+  scrapeArticleContent,
+  pushArticleContent
+};
