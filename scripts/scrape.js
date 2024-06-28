@@ -4,16 +4,14 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 
-const scrapeLinks = require('./scrape-links');
-
-(async () => {
+async function scraper(link) {
   try {
     // Launch browser
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
 
     console.log('Navigating to the website...');
-    await page.goto('https://www.massdevice.com/?s=stryker&page=1', { waitUntil: 'networkidle2' });
+    await page.goto(link, { waitUntil: 'networkidle2' });
 
     console.log('Extracting data...');
 
@@ -21,7 +19,7 @@ const scrapeLinks = require('./scrape-links');
     await page.select('#wtwh-search-sort-select', 'descending');
     await page.locator('.search-results-article-container').wait();
 
-    const data = await page.evaluate(() => {
+    const newData = await page.evaluate(() => {
       const articles = [];
       const articleContainers = document.querySelectorAll('.search-results-article-container');
 
@@ -45,15 +43,28 @@ const scrapeLinks = require('./scrape-links');
     // Save to JSON
     const filePath = path.join(__dirname,'../data/scraped-data.json');
 
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    let existingData = [];
+    if (fs.existsSync(filePath)) {
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      if (fileContent) {
+        existingData = JSON.parse(fileContent);
+      }
+    }
+
+    const combinedData = [...existingData, ...newData];
+    fs.writeFileSync(filePath, JSON.stringify(combinedData, null, 2));
+
 
     console.log(`Data saved to ${filePath}`);
     console.log('made');
 
     // Close browser
     await browser.close();
-    scrapeLinks.pushArticleContent();
   } catch (error) {
     console.error('Error:', error);
   }
-})();
+};
+
+module.exports = {
+  scraper
+};
